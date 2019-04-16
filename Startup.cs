@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using basic.Middleware;
 
 namespace basic
 {
@@ -39,48 +40,10 @@ namespace basic
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseMiddleware<LoggingMiddleware>();
 
-            app.Use(async (context, next) =>
-            {
-            if (context.Request.Path.Value.Contains("home"))
-            {
-                await context.Response.WriteAsync("Response generated from use()");
-            }
-            else
-            {
-                Debug.WriteLine("=== Before Invoke() ===");
-                await next.Invoke();
-                Debug.WriteLine("=== After Invoke() ===");
-                }
-            });
-
-            app.Run(async context =>
-            {
-                Debug.WriteLine("=== During Run() ===");
-                await context.Response.WriteAsync("The response from Run()");
-            });
-
-            //    if (env.IsDevelopment())
-            //    {
-            //        app.UseDeveloperExceptionPage();
-            //    }
-            //    else
-            //    {
-            //        app.UseExceptionHandler("/Home/Error");
-            //        app.UseHsts();
-            //    }
-
-            //    app.UseHttpsRedirection();
-            //    app.UseStaticFiles();
-            //    //app.UseCookiePolicy();
-            //    logger
-
-            //    app.UseMvc(routes =>
-            //    {
-            //        routes.MapRoute(
-            //            name: "default",
-            //            template: "{controller=Home}/{action=Index}/{id?}");
-            //    });
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }
